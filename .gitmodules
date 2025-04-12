@@ -1,0 +1,10 @@
+[
+[submodule "ECommons"]
+	path = ECommons
+	url = https://github.com/NightmareXIV/ECommons
+[submodule "ECommons.FileWriter"]
+	path = ECommons.FileWriter
+	url = https://github.com/Limiana/ECommons.FileWriter
+[submodule "FFXIVClientStructs"]
+	path = FFXIVClientStructs
+	url = https://github.com/Limiana/FFXIVClientStructs
