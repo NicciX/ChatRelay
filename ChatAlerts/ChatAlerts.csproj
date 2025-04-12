@@ -11,5 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="1.10.0" />
+    <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
   </ItemGroup>
 </Project>
