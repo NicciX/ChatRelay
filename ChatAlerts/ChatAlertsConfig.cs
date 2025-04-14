@@ -10,11 +10,11 @@ namespace ChatAlerts
         public List<Alert> Alerts = new();
 
         public void Save()
-            => Dalamud.PluginInterface.SavePluginConfig(this);
+            => Moon.PluginInterface.SavePluginConfig(this);
 
         public static ChatAlertsConfig Load()
         {
-            if (Dalamud.PluginInterface.GetPluginConfig() is ChatAlertsConfig config)
+            if (Moon.PluginInterface.GetPluginConfig() is ChatAlertsConfig config)
                 return config;
 
             config = new ChatAlertsConfig();

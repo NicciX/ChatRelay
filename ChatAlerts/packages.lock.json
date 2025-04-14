@@ -14,6 +14,15 @@
         "resolved": "1.2.25",
         "contentHash": "xCXiw7BCxHJ8pF6wPepRUddlh2dlQlbr81gXA72hdk4FLHkKXas7EH/n+fk5UCA/YfMqG1Z6XaPiUjDbUNBUzg=="
       },
+      "DotNext": {
+        "type": "Direct",
+        "requested": "[5.21.0, )",
+        "resolved": "5.21.0",
+        "contentHash": "fU63OJVSDSsOl6adjNM8e5zmyhdZkX2ztvmSeW6lBjFdvFG8ZwMOrJ+L8Ih/2yKr0cuaV8PNwnhDrlS4MFf14A==",
+        "dependencies": {
+          "System.IO.Hashing": "8.0.0"
+        }
+      },
       "NAudio": {
         "type": "Direct",
         "requested": "[1.10.0, )",
@@ -23,6 +32,12 @@
           "Microsoft.Win32.Registry": "4.7.0",
           "System.Resources.Extensions": "4.7.0"
         }
+      },
+      "XivCommon": {
+        "type": "Direct",
+        "requested": "[9.0.0, )",
+        "resolved": "9.0.0",
+        "contentHash": "avaBp3FmSCi/PiQhntCeBDYOHejdyTWmFtz4pRBVQQ8vHkmRx+YTk1la9dkYBMlXxRXKckEdH1iI1Fu61JlE7w=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
@@ -37,6 +52,11 @@
           "System.Security.AccessControl": "4.7.0",
           "System.Security.Principal.Windows": "4.7.0"
         }
+      },
+      "System.IO.Hashing": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "ne1843evDugl0md7Fjzy6QjJrzsjh46ZKbhf8GwBXb5f/gw97J4bxMs0NQKifDuThh/f0bZ0e62NPl1jzTuRqA=="
       },
       "System.Resources.Extensions": {
         "type": "Transitive",

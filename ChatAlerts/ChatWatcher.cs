@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Dalamud.Game;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using ChatAlerts.Ipc;
 
 namespace ChatAlerts;
 
@@ -15,11 +18,13 @@ public class ChatWatcher : IDisposable
     private static List<Alert> Alerts
         => ChatAlerts.Config.Alerts;
 
+    //private static WoLuaIpc? WoLuaIpc;
+
     public ChatWatcher()
     {
         UpdateAllAlerts();
-        Dalamud.Chat.CheckMessageHandled += OnCheckMessageHandled;
-        Dalamud.Chat.ChatMessage         += OnChatMessage;
+        Moon.Chat.CheckMessageHandled += OnCheckMessageHandled;
+        Moon.Chat.ChatMessage         += OnChatMessage;
     }
 
     internal void UpdateAllAlerts()
@@ -29,8 +34,8 @@ public class ChatWatcher : IDisposable
 
         foreach (var alert in Alerts)
             UpdateAlert(alert);
-
-        Dalamud.Log.Debug($"Watching Channels: {(_watchAllChannels ? "All" : string.Join(", ", _watchedChannels))}");
+        //Service.ServerChat.SendMessage("/echo Alert Test");
+        Moon.Log.Debug($"Watching Channels: {(_watchAllChannels ? "All" : string.Join(", ", _watchedChannels))}");
     }
 
     internal void UpdateAlert(Alert alert)
@@ -43,8 +48,8 @@ public class ChatWatcher : IDisposable
 
     public void Dispose()
     {
-        Dalamud.Chat.CheckMessageHandled -= OnCheckMessageHandled;
-        Dalamud.Chat.ChatMessage         -= OnChatMessage;
+        Moon.Chat.CheckMessageHandled -= OnCheckMessageHandled;
+        Moon.Chat.ChatMessage         -= OnChatMessage;
     }
 
     private static void CopySublist(IReadOnlyList<Payload> payloads, List<Payload> newPayloads, int from, int to)
@@ -53,8 +58,12 @@ public class ChatWatcher : IDisposable
             newPayloads.Add(payloads[from++]);
     }
 
-    private static bool HandleAlert(Alert alert, List<Payload> payloads, out List<Payload> newPayloads)
+    
+
+    private static bool HandleAlert(Alert alert, List<Payload> payloads, out List<Payload> newPayloads, string msg)
     {
+        //Service.ServerChat.SendMessage("/echo Alert Test B");
+        
         newPayloads = payloads;
         var            lastCopiedPayload = 0;
         List<Payload>? ret               = null;
@@ -68,6 +77,9 @@ public class ChatWatcher : IDisposable
             var idx    = alert.Match(tp.Text ?? string.Empty, oldIdx);
             if (idx.From < 0)
                 continue;
+            //ChatAlerts.ServerChat.SendMessage($"/.emo chatalert {tp.Text}");
+            //ChatAlerts.ServerChat.SendMessage($"/.emo chatalert {msg}");
+            //Dalamud.Log.Information($"Match: {tp.Text}");
 
             match = true;
             if (!alert.Highlight)
@@ -83,7 +95,6 @@ public class ChatWatcher : IDisposable
                 var preString   = tp.Text!.Substring(oldIdx,   idx.From - oldIdx);
                 var matchString = tp.Text!.Substring(idx.From, idx.Length);
                 oldIdx = idx.From + idx.Length;
-
                 if (preString.Length > 0)
                     ret.Add(new TextPayload(preString));
                 if (alert.HighlightForeground != 0)
@@ -108,6 +119,13 @@ public class ChatWatcher : IDisposable
             CopySublist(payloads, ret, lastCopiedPayload, payloads.Count);
             newPayloads = ret;
         }
+        if (match)
+        {
+            //Service.ServerChat.SendMessage($"/.emo chatalert {msg}");
+            //Dalamud.Log.Information($"Match: {msg}");
+            //ChatAlerts.ServerChat.SendMessage($"/.emo chatalert {msg}");
+            //WoLua.UpdChat(msg, alert.Name, "Alert");
+        }
 
         return match;
     }
@@ -124,13 +142,37 @@ public class ChatWatcher : IDisposable
                   && (a.Channels.Contains(XivChatType.None) || a.Channels.Contains(type))))
         {
             var payloads   = alert.SenderAlert ? sender.Payloads : message.Payloads;
-            var alertMatch = HandleAlert(alert, payloads, out payloads);
+            //var msg = "[" + type.ToString() + "] <" + sender.TextValue + "> " + message.TextValue;
+            var msg = message.TextValue;
+            var alertMatch = HandleAlert(alert, payloads, out payloads, msg);
+            
+            
+            //msg = "[" + type.ToString() + "] <" + sender.TextValue + "> " + msg;
+            
+            //Dalamud.Log.Information($"Match msg: {msg}");
+            //ChatAlerts.ServerChat.SendMessage($"/.emo chatalert {msg}");
+            if (alertMatch)
+                //ChatAlerts.ServerChat.SendMessage($"/.emo chatalert {msg}");
+                //WoLua.UpdChat(msg, sender.TextValue, type.ToString());
+                //Moon.Log.Information($"Match msg: {msg}");
+                if (msg != null)
+                {
+                    Moon.Log.Information($"Match msg: {msg}");
+                    Moon.Log.Information($"Match sender: {sender.TextValue}");
+                    Moon.Log.Information($"Match chn: {type.ToString()}");
+                
+                    WoLua.UpdChat(msg, sender.TextValue, type.ToString(), "NotYetImplemented");
+                }
+
             if (alert.SenderAlert)
                 sender = new SeString(payloads);
             else
                 message = new SeString(payloads);
             if (alertMatch && !soundPlayed)
                 soundPlayed = alert.StartSound();
+                //Moon.Log.Information($"Match msg: {msg}");
+                //WoLua.UpdChat(msg, sender.TextValue, type.ToString());
+                
         }
     }
 
